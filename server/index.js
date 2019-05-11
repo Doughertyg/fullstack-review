@@ -1,5 +1,6 @@
 import getReposByUsername from '../helpers/github.js';
 import save from '../database/index.js';
+import find from '../database/index.js';
 import db from '../database/index.js';
 const express = require('express');
 let app = express();
@@ -17,12 +18,15 @@ app.post('/repos', function (req, res) {
   return success message
   
   */
+  console.log('req is!:', req); //do we need to parse this?
 
   	getReposByUsername(req.username, (err, data) => {
   		if (err) {
   			console.log('error getting repos from github!:', err);
   			return;
   		}
+
+  		console.log('data is type:', typeof data); //need to be parsed?
 
   		data.forEach((repo) => { //access each object, aka repo in the array
   			var newDbEntry = { //defining the repo object to save to db
@@ -33,7 +37,7 @@ app.post('/repos', function (req, res) {
   			}
 
 
-  			find(repo, { id: newDbEntry.id }, (err, returnedRepo) => {
+  			find({ id: newDbEntry.id }, (err, returnedRepo) => { //find repo on db with id newentryid.id
   				if (err) {
   					console.log('error finding this repo!'); //repo doesn't exist
   					//insert repo to db
@@ -45,12 +49,8 @@ app.post('/repos', function (req, res) {
   					return;
   				}
 
-  				console.log('repo already exists in db!'); //do nothing
+  				console.log('repo already exists in db!:', returnedRepo); //do nothing
   			})
-
-  			if () {}
-
-
   		})
   	})
 
@@ -65,6 +65,17 @@ app.get('/repos', function (req, res) {
   possibly use options to specify 25 max results 
 	
   */
+
+  find(id, (err, returnedRepos) => {
+  	if (err) { 
+  		console.log('no repos in db!');
+  		res.send([]);
+  		return;
+  	}
+
+  	res.stats(200);
+  	res.send(returnedRepos); //do a json operation on data before sending?
+  })
 });
 
 let port = 1128;

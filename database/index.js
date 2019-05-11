@@ -49,9 +49,9 @@ let save = (repoToSave) => {
 
 //should define find callback here and any others we might use
 
-let find = (repo, id, callback) => {
+let find = (id, callback) => {
 
-	repo.find(id, callback);
+	Repo.find(id, callback); //Repo is the name of our model class
 }
 
 // let find = (err, repos) => {
