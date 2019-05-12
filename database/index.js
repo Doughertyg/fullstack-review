@@ -13,14 +13,15 @@ db.once('open', () => { //called once the connection is opened
 	  id: Number,
 	  name: String,
 	  url: String,
-	  owner: String
+	  owner: String,
+	  lastUpdated: String 
 	});
 
 	//add method here to schema? method to return data
 
 	//compile into a model for use:
 
-	let Repo = mongoose.model('Repo', repoSchema); //entries to our db will instances of Repo
+	let Repo = mongoose.model('Repo', repoSchema); //entries to our db will be instances of Repo
 
 });
 
@@ -51,7 +52,14 @@ let save = (repoToSave) => {
 
 let find = (id, callback) => {
 
-	Repo.find(id, callback); //Repo is the name of our model class
+	if (id === null) { //if no id is passed in, aka we want more than one
+
+		Repo.find().limit(25).sort({ lastUpdated: -1 }).exec(callback); //Repo is the name of our model class
+	
+	} else {
+		Repo.find(id, callback); //callback gets passed the results
+
+	}
 }
 
 // let find = (err, repos) => {

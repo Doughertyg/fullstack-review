@@ -33,7 +33,8 @@ app.post('/repos', function (req, res) {
   				id: repo.id,
   				name: repo.name,
   				url: repo.html_url,
-  				owner: repo.owner.login
+  				owner: repo.owner.login,
+  				lastUpdated: repo.updated_at
   			}
 
 
@@ -43,7 +44,7 @@ app.post('/repos', function (req, res) {
   					//insert repo to db
   					var repoEntry = new Repo(newDbEntry);
 
-  					repoEntry.save(); //save new repo in db
+  					save(repoEntry); //save new repo in db
 
 
   					return;
@@ -66,7 +67,7 @@ app.get('/repos', function (req, res) {
 	
   */
 
-  find(id, (err, returnedRepos) => {
+  find(null, (err, returnedRepos) => {
   	if (err) { 
   		console.log('no repos in db!');
   		res.send([]);
