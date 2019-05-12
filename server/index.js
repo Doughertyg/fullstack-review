@@ -1,11 +1,12 @@
-import getReposByUsername from '../helpers/github.js';
-import save from '../database/index.js';
-import find from '../database/index.js';
-import db from '../database/index.js';
+const gitApi = require('../helpers/github.js');
+const db = require('../database/index.js');
 const express = require('express');
+const bodyparser = require('body-parser');
 let app = express();
 
 app.use(express.static(__dirname + '/../client/dist'));
+
+app.use(bodyparser.json());
 
 app.post('/repos', function (req, res) {
   /* TO-DOs
@@ -19,8 +20,11 @@ app.post('/repos', function (req, res) {
   
   */
   console.log('req is!:', req); //do we need to parse this?
+  var parsd = json.parse(req);
+  console.log('parsed req:', parsd);
+  console.log('search term is(req.username):', req.username);
 
-  	getReposByUsername(req.username, (err, data) => {
+  	gitApi.getReposByUsername(req.username, (err, data) => {
   		if (err) {
   			console.log('error getting repos from github!:', err);
   			return;
@@ -38,7 +42,7 @@ app.post('/repos', function (req, res) {
   			}
 
 
-  			find({ id: newDbEntry.id }, (err, returnedRepo) => { //find repo on db with id newentryid.id
+  			db.find({ id: newDbEntry.id }, (err, returnedRepo) => { //find repo on db with id newentryid.id
   				if (err) {
   					console.log('error finding this repo!'); //repo doesn't exist
   					//insert repo to db
@@ -54,9 +58,6 @@ app.post('/repos', function (req, res) {
   			})
   		})
   	})
-
-
-
 });
 
 app.get('/repos', function (req, res) {
@@ -67,7 +68,7 @@ app.get('/repos', function (req, res) {
 	
   */
 
-  find(null, (err, returnedRepos) => {
+  db.find(null, (err, returnedRepos) => {
   	if (err) { 
   		console.log('no repos in db!');
   		res.send([]);
