@@ -2,11 +2,15 @@ const gitApi = require('../helpers/github.js');
 const db = require('../database/index.js');
 const express = require('express');
 const bodyparser = require('body-parser');
+// const json = require('json');
 let app = express();
 
-app.use(express.static(__dirname + '/../client/dist'));
-
 app.use(bodyparser.json());
+app.use(bodyparser.urlencoded());
+app.use(bodyparser.text());
+app.use(bodyparser.raw());
+
+app.use(express.static(__dirname + '/../client/dist'));
 
 app.post('/repos', function (req, res) {
   /* TO-DOs
@@ -18,21 +22,26 @@ app.post('/repos', function (req, res) {
   Search db for repos, save those that don't exist
   return success message
   
-  */
-  console.log('req is!:', req); //do we need to parse this?
-  var parsd = json.parse(req);
-  console.log('parsed req:', parsd);
-  console.log('search term is(req.username):', req.username);
+  */  
+  
+  console.log('search term is(req.body.username):', req.body.username);
 
-  	gitApi.getReposByUsername(req.username, (err, data) => {
+  	gitApi.getReposByUsername(req.body.username, (err, data) => {
   		if (err) {
   			console.log('error getting repos from github!:', err);
   			return;
   		}
 
-  		console.log('data is type:', typeof data); //need to be parsed?
+      console.log('[server/index.js:32] data body returned from gitapi:', data.body);
 
-  		data.forEach((repo) => { //access each object, aka repo in the array
+      var parsedBody = JSON.parse(data.body);
+
+  		console.log('data is type:', typeof data, 'array?:', Array.isArray(parsedBody)); //need to be parsed?
+
+
+  		parsedBody.forEach((repo) => {
+        //access each object, aka repo in the array        
+
   			var newDbEntry = { //defining the repo object to save to db
   				id: repo.id,
   				name: repo.name,
@@ -50,11 +59,20 @@ app.post('/repos', function (req, res) {
 
   					save(repoEntry); //save new repo in db
 
-
   					return;
   				}
 
-  				console.log('repo already exists in db!:', returnedRepo); //do nothing
+          //console.log('what is the returned repo? array?:', Array.isArray(returnedRepo), 'is it an object?:', typeof returnedRepo);
+
+          if (returnedRepo.length === 0) { //repo doesn't exist in db! insert
+            var repoEntry = new db.db.base.models.Repo(newDbEntry);
+
+            db.save(repoEntry); //save new repo in db
+            console.log('repo saved in db!');
+          } else {
+            console.log('repo already exists in db!:', returnedRepo); //do nothing
+          }
+
   			})
   		})
   	})

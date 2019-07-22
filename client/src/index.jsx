@@ -26,11 +26,11 @@ class App extends React.Component {
 
         console.log('data before parse!:', data);
 
-        var resData = json.parse(data);
-        console.log('data after parse!', resData);
+        // var resData = json.parse(data);
+        // console.log('data after parse!', resData);
 
         this.setState({
-          repos: resData
+          repos: Data
         })
 
         // repolist updated! state updated, will refresh
@@ -41,7 +41,7 @@ class App extends React.Component {
   search (term) {
     console.log(`${term} was searched`);
 
-    $.post('/repos', { username: `${term}` }, (err, data) => {
+    $.post("/repos", {username: term}, (err, data) => {
       if (err) {
         console.log('error posting to the server! Check other places on pipeline');
         return;
