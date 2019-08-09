@@ -17,7 +17,7 @@ db.once('open', () => { //called once the connection is opened
 	  lastUpdated: String 
 	});
 
-	//add method here to schema? method to return data
+	
 
 	//compile into a model for use:
 
@@ -27,16 +27,6 @@ db.once('open', () => { //called once the connection is opened
 });
 
 //define save callback and actions
-/* wait this is wrong:
-let save = (err, repo) => {
-	if (err) {
-		console.log('error saving repo! eek!');
-		return;
-	}
-
-	console.log('successfully saved repo:', repo);
-}
-*/
 
 let save = (repoToSave) => {
 	repoToSave.save((err, repo) => {
@@ -64,15 +54,6 @@ let find = (id, callback) => {
 
 	}
 }
-
-// let find = (err, repos) => {
-// 	if (err) {
-// 		console.log('error finding repo! please re-evaluate life choices');
-// 		return;
-// 	}
-
-// 	console.log('found repos!:', repos);
-// }
 
 /*
 

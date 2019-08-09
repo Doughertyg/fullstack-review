@@ -62,7 +62,7 @@ app.post('/repos', function (req, res) {
   					return;
   				}
 
-          //console.log('what is the returned repo? array?:', Array.isArray(returnedRepo), 'is it an object?:', typeof returnedRepo);
+          
 
           if (returnedRepo.length === 0) { //repo doesn't exist in db! insert
             var repoEntry = new db.db.base.models.Repo(newDbEntry);
@@ -94,7 +94,7 @@ app.get('/repos', function (req, res) {
   	}
 
   	res.stats(200);
-  	res.send(returnedRepos); //do a json operation on data before sending?
+  	res.send(returnedRepos); 
   })
 });
 
